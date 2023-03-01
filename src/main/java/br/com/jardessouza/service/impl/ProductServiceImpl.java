@@ -11,6 +11,8 @@ import br.com.jardessouza.util.ProductConverterUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductServiceImpl implements IProductService {
 
@@ -42,7 +44,10 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<ProductOutputDTO> findAll() {
-        return null;
+        var product = this.productRepository.findAll();
+        return product.stream()
+                .map(ProductConverterUtil::productToProductOutputDto)
+                .collect(Collectors.toList());
     }
 
     private void checkDuplicity(String name){
@@ -57,4 +62,6 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(() -> new ProductNotFoundException(id));
         return product;
     }
+
+
 }
