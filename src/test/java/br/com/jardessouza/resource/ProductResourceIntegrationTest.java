@@ -5,6 +5,7 @@ import br.com.jardessouza.ProductServiceGrpc;
 import br.com.jardessouza.RequestById;
 import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.assertj.core.api.Assertions;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,6 +87,26 @@ public class ProductResourceIntegrationTest {
 
         assertThatExceptionOfType(StatusRuntimeException.class)
                 .isThrownBy(() -> this.serviceBlockingStub.findById(resquest))
+                .withMessage("NOT_FOUND: Produto com ID 100 nao encontrado.");
+    }
+
+    @Test
+    @DisplayName("When delete is call with od should does not throw ")
+    public void deleteSuccessTest(){
+        var resquest = RequestById.newBuilder()
+                .setId(1L).build();
+
+        Assertions.assertThatNoException().isThrownBy(() -> this.serviceBlockingStub.delete(resquest));
+    }
+
+    @Test
+    @DisplayName("When delete is call with invalid throw ProductNotFoundException")
+    public void deleteExceptionTest(){
+        var resquest = RequestById.newBuilder()
+                .setId(100L).build();
+
+        assertThatExceptionOfType(StatusRuntimeException.class)
+                .isThrownBy(() -> this.serviceBlockingStub.delete(resquest))
                 .withMessage("NOT_FOUND: Produto com ID 100 nao encontrado.");
     }
 
