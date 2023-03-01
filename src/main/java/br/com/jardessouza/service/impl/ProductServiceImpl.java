@@ -1,5 +1,6 @@
 package br.com.jardessouza.service.impl;
 
+import br.com.jardessouza.domain.Product;
 import br.com.jardessouza.dto.ProductInputDTO;
 import br.com.jardessouza.dto.ProductOutputDTO;
 import br.com.jardessouza.exception.ProductAlreadyExistsException;
@@ -29,14 +30,14 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductOutputDTO findById(Long id) {
-        var product = this.productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+        var product = getProduct(id);
         return ProductConverterUtil.productToProductOutputDto(product);
     }
 
     @Override
     public void delete(Long id) {
-
+        var product = getProduct(id);
+        this.productRepository.delete(product);
     }
 
     @Override
@@ -49,5 +50,11 @@ public class ProductServiceImpl implements IProductService {
                 .ifPresent(e -> {
                     throw new ProductAlreadyExistsException(name);
                 });
+    }
+
+    private Product getProduct(Long id) {
+        var product = this.productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+        return product;
     }
 }

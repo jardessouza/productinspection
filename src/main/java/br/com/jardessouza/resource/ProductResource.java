@@ -1,9 +1,6 @@
 package br.com.jardessouza.resource;
 
-import br.com.jardessouza.ProductRequest;
-import br.com.jardessouza.ProductResponse;
-import br.com.jardessouza.ProductServiceGrpc;
-import br.com.jardessouza.RequestById;
+import br.com.jardessouza.*;
 import br.com.jardessouza.dto.ProductInputDTO;
 import br.com.jardessouza.service.IProductService;
 import io.grpc.stub.StreamObserver;
@@ -50,6 +47,13 @@ public class ProductResource extends ProductServiceGrpc.ProductServiceImplBase {
                 .build();
 
         responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void delete(RequestById request, StreamObserver<EmptyResponse> responseObserver) {
+        this.productService.delete(request.getId());
+        responseObserver.onNext(EmptyResponse.newBuilder().build());
         responseObserver.onCompleted();
     }
 }
