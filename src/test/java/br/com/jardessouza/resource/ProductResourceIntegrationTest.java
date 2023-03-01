@@ -1,11 +1,10 @@
 package br.com.jardessouza.resource;
 
-import br.com.jardessouza.ProductRequest;
-import br.com.jardessouza.ProductServiceGrpc;
-import br.com.jardessouza.RequestById;
+import br.com.jardessouza.*;
 import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -108,6 +107,23 @@ public class ProductResourceIntegrationTest {
         assertThatExceptionOfType(StatusRuntimeException.class)
                 .isThrownBy(() -> this.serviceBlockingStub.delete(resquest))
                 .withMessage("NOT_FOUND: Produto com ID 100 nao encontrado.");
+    }
+
+    @Test
+    @DisplayName("When findAll method is call a product list is returned")
+    public void findAllSuccessTest(){
+        EmptyRequest request = EmptyRequest.newBuilder().build();
+
+        var responseList = this.serviceBlockingStub.findAll(request);
+
+        assertThat(responseList).isInstanceOf(ProductResponseList.class);
+        assertThat(responseList.getProductsCount()).isEqualTo(2);
+        Assertions.assertThat(responseList.getProductsList())
+                .extracting("id","name", "price", "quantityInStock")
+                .contains(
+                        Tuple.tuple(1L , "Product A", 10.99, 10),
+                        Tuple.tuple(2L, "Product B", 10.99, 10)
+                );
     }
 
 
