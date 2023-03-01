@@ -3,6 +3,7 @@ package br.com.jardessouza.service.impl;
 import br.com.jardessouza.domain.Product;
 import br.com.jardessouza.dto.ProductInputDTO;
 import br.com.jardessouza.exception.ProductAlreadyExistsException;
+import br.com.jardessouza.exception.ProductNotFoundException;
 import br.com.jardessouza.repository.ProductRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -47,4 +48,33 @@ public class ProductServiceImplTest {
                         .isThrownBy(() -> this.productService.create(inputDTO));
 
     }
+
+    @Test
+    @DisplayName("when FindById product is call with valid id a product is returned")
+    public void FindByIdSuccessTest(){
+        Long id = 1L;
+        var product = new Product(1L, "product name", 10.00, 10);
+
+        Mockito.when(this.productRepository.findById(Mockito.any())).thenReturn(Optional.of(product));
+
+        var outputDTO = this.productService.findById(id);
+
+        Assertions.assertThat(outputDTO)
+                .usingRecursiveComparison()
+                .isEqualTo(product);
+    }
+
+    @Test
+    @DisplayName("when FindById product is call with invalid id throws ProductNotFound")
+    public void FindByIdExceptionTest(){
+        Long id = 1L;
+
+        Mockito.when(this.productRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        Assertions.assertThatExceptionOfType(ProductNotFoundException.class)
+                .isThrownBy(() -> this.productService.findById(id));
+
+    }
+
+
 }

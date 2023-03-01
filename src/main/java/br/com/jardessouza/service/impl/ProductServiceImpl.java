@@ -3,6 +3,7 @@ package br.com.jardessouza.service.impl;
 import br.com.jardessouza.dto.ProductInputDTO;
 import br.com.jardessouza.dto.ProductOutputDTO;
 import br.com.jardessouza.exception.ProductAlreadyExistsException;
+import br.com.jardessouza.exception.ProductNotFoundException;
 import br.com.jardessouza.repository.ProductRepository;
 import br.com.jardessouza.service.IProductService;
 import br.com.jardessouza.util.ProductConverterUtil;
@@ -28,7 +29,9 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductOutputDTO findById(Long id) {
-        return null;
+        var product = this.productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+        return ProductConverterUtil.productToProductOutputDto(product);
     }
 
     @Override
